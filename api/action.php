@@ -5,7 +5,8 @@ require 'config.php';
 function read_all()
 {
 	global $conn;
-	$sql = "SELECT * FROM `data`";
+	global $table;
+	$sql = "SELECT * FROM ".$table;
 	try {
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(':id',$id);
@@ -30,9 +31,10 @@ function read($id)
 {
 	// $student_id = $data['id'];
 	global $conn;
+	global $table;
 	// $student_id = $id;
 
-	$sql = "SELECT * FROM `data` WHERE id = :id";
+	$sql = "SELECT * FROM ".$table." WHERE id = :id";
 	try {
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(':id',$id);
@@ -45,6 +47,7 @@ function read($id)
 		$row = $stmt->fetch();
 		echo json_encode($row);
 	}else{
+		header("HTTP/1.1 404 Not Found");
 		echo json_encode(array('message'=> 'No records found', 'status' => false));
 	}
 	$conn = null;
@@ -53,10 +56,12 @@ function read($id)
 function create($data)
 {
 	global $conn;
+	global $table;
+
 	$first_name = $data['first_name'];
 	$lalst_name = $data['last_name'];
 
-	$sql = "INSERT INTO `data` (`id`, `fname`, `lname`) VALUES (NULL, '$f_name', '$l_name')";
+	$sql = "INSERT INTO ".$table." (`id`, `fname`, `lname`) VALUES (NULL, '$first_name', '$lalst_name')";
 	try {
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(':id', $id);
@@ -77,10 +82,13 @@ function create($data)
 
 function update($id,$data)
 {
+	global $conn;
+	global $table;
+
 	$first_name = $data['first_name'];
 	$lalst_name = $data['last_name'];
 
-	$sql = "UPDATE `data` SET `fname`='$first_name', `lname`='$last_name' WHERE `id` = :id";
+	$sql = "UPDATE ".$table." SET `fname`='$first_name', `lname`='$last_name' WHERE `id` = :id";
 	try {
 		$stmt = $conn->prepare($sql);
 		$stmt->bindParam(':id', $id);
@@ -99,7 +107,10 @@ function update($id,$data)
 
 function delete($id)
 {
-	$sql = "DELETE FROM `data` WHERE `id` = :id";
+	global $conn;
+	global $table;
+
+	$sql = "DELETE FROM ".$table." WHERE `id` = :id";
 
 	try {
 		$stmt = $conn->prepare($sql);
