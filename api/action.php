@@ -22,17 +22,16 @@ function read_all()
 		echo json_encode($row);
 		
 	}else{
-		echo json_encode(array('message'=> 'No records found', 'status' => false));
+		echo json_encode(array('status' => false,
+							'error' => array('message'=> 'No records found')));
 	}
 	$conn = null;
 }
 
 function read($id)
 {
-	// $student_id = $data['id'];
 	global $conn;
 	global $table;
-	// $student_id = $id;
 
 	$sql = "SELECT * FROM ".$table." WHERE id = :id";
 	try {
@@ -48,7 +47,8 @@ function read($id)
 		echo json_encode($row);
 	}else{
 		header("HTTP/1.1 404 Not Found");
-		echo json_encode(array('message'=> 'No records found', 'status' => false));
+		echo json_encode(array('status' => false,
+							'error' => array('message'=> 'No records found')));
 	}
 	$conn = null;
 }
@@ -73,9 +73,11 @@ function create($data)
 	$stmt->execute();
 
 	if ($stmt){
-		echo json_encode(array('message'=> 'Student record inserted', 'status' => true));
+		echo json_encode(array('status' => true,
+							'error' => array('message'=> 'Student record inserted')));
 	}else{
-		echo json_encode(array('message'=> 'Student record not inserted', 'status' => false));
+		echo json_encode(array('status' => false,
+							'error' => array('message'=> 'Student record not inserted',)));
 	}
 	$conn = null;
 }
@@ -98,9 +100,11 @@ function update($id,$data)
 	}
 
 	if ($stmt){
-		echo json_encode(array('message'=> 'Student record updated', 'status' => true));
+		echo json_encode(array('status' => true,
+							'error' => array('message'=> 'Student record updated')));
 	}else{
-		echo json_encode(array('message'=> 'Student record not updated', 'status' => false));
+		echo json_encode(array('status' => false,
+							'error' => array('message'=> 'Student record not updated')));
 	}
 	$conn = null;
 }
@@ -121,9 +125,11 @@ function delete($id)
 	}
 
 	if ($stmt){
-		echo json_encode(array('message' => 'Student record deleted', 'status' => true));
+		echo json_encode(array('status' => true,
+							'error' => array('message'=> 'Student record deleted')));
 	}else{
-		echo json_encode(array('message' => 'Student record not deleted', 'status' => false));
+		echo json_encode(array('status' => false,
+							'error' => array('message'=> 'Student record not deleted')));
 	}
 	$conn = null;
 }

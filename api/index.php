@@ -5,6 +5,7 @@ header('Acess-Control-Allow-Methods: GET,POST,PUT,DELETE');
 header('Acess-Control-Allow-Headers: Acess-Control-Allow-Headers, Content-Type, Acess-Control-Allow-Methods, Authorization, X-Requested-With');
 
 require 'action.php';
+require 'validate.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode('/', $uri);
@@ -30,22 +31,27 @@ if ($requestMethod == 'GET' AND $id == null){
 	read($id);
 
 }elseif($requestMethod == 'POST'){
-	if (!empty($data)){
+
+	if ($testData->validateData($data)){
 		create($data);
 	}else{
-		echo json_encode(array('message'=> 'no data provided', 'status' => false));
+		echo json_encode(array('status' => false,
+							'error' => array('message'=> $testData->getErrorMessage())));
 		exit();
 	}
 }elseif($requestMethod == 'PUT'){
 	if ($id !== null){
-		if (!empty($data)){
+		
+		if ($testData->validateData($data)){
 		update($id,$data);
 		}else{
-			echo json_encode(array('message'=> 'no data provided', 'status' => false));
+			echo json_encode(array('status' => false,
+							'error' => array('message'=> $testData->getErrorMessage())));
 			exit();
 		}
 	}else{
-		echo json_encode(array('message'=> 'no id provided', 'status' => false));
+		echo json_encode(array('status' => false,
+							'error' => array('message'=> 'no id provided')));
 		exit();
 	}
 	
@@ -53,7 +59,8 @@ if ($requestMethod == 'GET' AND $id == null){
 	if ($id !== null){
 		delete($id);
 	}else{
-		echo json_encode(array('message'=> 'no id provided', 'status' => false));
+		echo json_encode(array('status' => false,
+							'error' => array('message'=> 'no id provided')));
 		exit();
 	}
 }

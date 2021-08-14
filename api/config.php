@@ -6,7 +6,8 @@ try {
 	$conn = new PDO($dsn, "root","");
 } catch (PDOException $e) {
 	header("HTTP/1.1 500 Internal Server Error");
-	exit($e->getMessage());
+	exit(json_encode(array('status' => false,
+							'error' => array('message'=> $e->getMessage()))));
 }
 $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC);
 ?>
