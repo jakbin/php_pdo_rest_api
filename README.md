@@ -31,7 +31,8 @@ create a database name with "api".
 		`lname` TEXT NOT NULL , 
 		PRIMARY KEY (`id`)) ENGINE = InnoDB;
 ```
-							Or
+
+Or
 
 import "apiTest.sql" file into your database.
 
