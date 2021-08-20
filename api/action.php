@@ -1,136 +1,131 @@
 <?php 
 
-require 'config.php';
-
-function read_all()
+class crudAll
 {
-	global $conn;
-	global $table;
-	$sql = "SELECT * FROM ".$table;
-	try {
-		$stmt = $conn->prepare($sql);
-		$stmt->bindParam(':id',$id);
+	private $conn = null;
+	private $table = null;
+
+	public function __construct($db,$dbTable)
+	{
+		$this->conn = $db;
+		$this->table = $dbTable;
+	}
+
+	function read_all()
+	{
+		$sql = "SELECT * FROM ".$this->table;
+		try {
+			$stmt = $this->conn->prepare($sql);
+			$stmt->execute();
+		} catch (PDOException $e) {
+			exit($e->getMessage());
+		}
 		$stmt->execute();
-	} catch (PDOException $e) {
-		exit($e->getMessage());
+
+		if ($stmt->rowCount() > 0){
+			$row = $stmt->fetchAll();
+			echo json_encode($row);
+			
+		}else{
+			echo json_encode(array('status' => false,
+								'error' => array('message'=> 'No records found')));
+		}
+		$conn = null;
 	}
-	$stmt = $conn->prepare($sql);
-	$stmt->execute();
 
-	if ($stmt->rowCount() > 0){
-		$row = $stmt->fetchAll();
-		echo json_encode($row);
-		
-	}else{
-		echo json_encode(array('status' => false,
-							'error' => array('message'=> 'No records found')));
+	function read(int $id)
+	{
+		$sql = "SELECT * FROM ".$this->table." WHERE id = :id";
+		try {
+			$stmt = $this->conn->prepare($sql);
+			$stmt->bindParam(':id',$id);
+			$stmt->execute();
+		} catch (PDOException $e) {
+			exit($e->getMessage());
+		}
+
+		if ($stmt->rowCount() > 0){
+			$row = $stmt->fetch();
+			echo json_encode($row);
+		}else{
+			header("HTTP/1.1 404 Not Found");
+			echo json_encode(array('status' => false,
+								'error' => array('message'=> 'No records found')));
+		}
+		$conn = null;
 	}
-	$conn = null;
-}
 
-function read($id)
-{
-	global $conn;
-	global $table;
+	function create(array $data)
+	{
+		$first_name = $data['first_name'];
+		$lalst_name = $data['last_name'];
 
-	$sql = "SELECT * FROM ".$table." WHERE id = :id";
-	try {
+		$sql = "INSERT INTO ".$this->table." (`id`, `fname`, `lname`) VALUES (NULL, '$first_name', '$lalst_name')";
+		try {
+			$stmt = $this->conn->prepare($sql);
+			$stmt->bindParam(':id', $id);
+			$stmt->execute();
+		} catch (PDOException $e) {
+			exit($e->getMessage());
+		}
 		$stmt = $conn->prepare($sql);
-		$stmt->bindParam(':id',$id);
 		$stmt->execute();
-	} catch (PDOException $e) {
-		exit($e->getMessage());
+
+		if ($stmt){
+			echo json_encode(array('status' => true,
+								'error' => array('message'=> 'Student record inserted')));
+		}else{
+			echo json_encode(array('status' => false,
+								'error' => array('message'=> 'Student record not inserted',)));
+		}
+		$conn = null;
 	}
 
-	if ($stmt->rowCount() > 0){
-		$row = $stmt->fetch();
-		echo json_encode($row);
-	}else{
-		header("HTTP/1.1 404 Not Found");
-		echo json_encode(array('status' => false,
-							'error' => array('message'=> 'No records found')));
-	}
-	$conn = null;
-}
+	function update(int $id,array $data)
+	{
+		$first_name = $data['first_name'];
+		$lalst_name = $data['last_name'];
 
-function create($data)
-{
-	global $conn;
-	global $table;
+		$sql = "UPDATE ".$this->table." SET `fname`='$first_name', `lname`='$last_name' WHERE `id` = :id";
+		try {
+			$stmt = $this->conn->prepare($sql);
+			$stmt->bindParam(':id', $id);
+			$stmt->execute();
+		} catch (PDOException $e) {
+			exit($e->getMessage());
+		}
 
-	$first_name = $data['first_name'];
-	$lalst_name = $data['last_name'];
-
-	$sql = "INSERT INTO ".$table." (`id`, `fname`, `lname`) VALUES (NULL, '$first_name', '$lalst_name')";
-	try {
-		$stmt = $conn->prepare($sql);
-		$stmt->bindParam(':id', $id);
-		$stmt->execute();
-	} catch (PDOException $e) {
-		exit($e->getMessage());
-	}
-	$stmt = $conn->prepare($sql);
-	$stmt->execute();
-
-	if ($stmt){
-		echo json_encode(array('status' => true,
-							'error' => array('message'=> 'Student record inserted')));
-	}else{
-		echo json_encode(array('status' => false,
-							'error' => array('message'=> 'Student record not inserted',)));
-	}
-	$conn = null;
-}
-
-function update($id,$data)
-{
-	global $conn;
-	global $table;
-
-	$first_name = $data['first_name'];
-	$lalst_name = $data['last_name'];
-
-	$sql = "UPDATE ".$table." SET `fname`='$first_name', `lname`='$last_name' WHERE `id` = :id";
-	try {
-		$stmt = $conn->prepare($sql);
-		$stmt->bindParam(':id', $id);
-		$stmt->execute();
-	} catch (PDOException $e) {
-		exit($e->getMessage());
+		if ($stmt){
+			echo json_encode(array('status' => true,
+								'error' => array('message'=> 'Student record updated')));
+		}else{
+			echo json_encode(array('status' => false,
+								'error' => array('message'=> 'Student record not updated')));
+		}
+		$conn = null;
 	}
 
-	if ($stmt){
-		echo json_encode(array('status' => true,
-							'error' => array('message'=> 'Student record updated')));
-	}else{
-		echo json_encode(array('status' => false,
-							'error' => array('message'=> 'Student record not updated')));
-	}
-	$conn = null;
-}
+	function delete(int $id)
+	{
+		$sql = "DELETE FROM ".$this->table." WHERE `id` = :id";
 
-function delete($id)
-{
-	global $conn;
-	global $table;
+		try {
+			$stmt = $this->conn->prepare($sql);
+			$stmt->bindParam(':id', $id);
+			$stmt->execute();
+		} catch (PDOException $e) {
+			exit($e->getMessage());
+		}
 
-	$sql = "DELETE FROM ".$table." WHERE `id` = :id";
-
-	try {
-		$stmt = $conn->prepare($sql);
-		$stmt->bindParam(':id', $id);
-		$stmt->execute();
-	} catch (PDOException $e) {
-		exit($e->getMessage());
+		if ($stmt){
+			echo json_encode(array('status' => true,
+								'error' => array('message'=> 'Student record deleted')));
+		}else{
+			echo json_encode(array('status' => false,
+								'error' => array('message'=> 'Student record not deleted')));
+		}
+		$conn = null;
 	}
 
-	if ($stmt){
-		echo json_encode(array('status' => true,
-							'error' => array('message'=> 'Student record deleted')));
-	}else{
-		echo json_encode(array('status' => false,
-							'error' => array('message'=> 'Student record not deleted')));
-	}
-	$conn = null;
 }
 ?>
