@@ -11,7 +11,7 @@
 1. Clone the repo 
 
 ```bash
-	git clone https://github.com/jakbin/php_pdo_rest_api.git
+git clone https://github.com/jakbin/php_pdo_rest_api.git
 ```
 
 2. Then create database.
@@ -19,14 +19,14 @@
 create a database name with "api".
 
 ```sql
-	create database api;
+create database api;
 ```
 
 ```sql
-	CREATE TABLE `apiTest`.`api` ( `id` INT NOT NULL AUTO_INCREMENT , 
-		`fname` TEXT NOT NULL , 
-		`lname` TEXT NOT NULL , 
-		PRIMARY KEY (`id`)) ENGINE = InnoDB;
+CREATE TABLE `apiTest`.`api` ( `id` INT NOT NULL AUTO_INCREMENT , 
+	`fname` TEXT NOT NULL , 
+	`lname` TEXT NOT NULL , 
+	PRIMARY KEY (`id`)) ENGINE = InnoDB;
 ```
 
 Or
@@ -38,5 +38,5 @@ import "apiTest.sql" file into your database.
 3. Start api server.
 s
 ```bash 
-	php -S 127.0.0.1:8080 -t php_pdo_pdo_api/
+php -S 127.0.0.1:8080 -t php_pdo_pdo_api/
 ```
